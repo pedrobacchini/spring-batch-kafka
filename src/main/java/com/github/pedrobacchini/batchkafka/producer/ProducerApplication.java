@@ -32,15 +32,15 @@ public class ProducerApplication {
     private final KafkaTemplate<Long, Customer> kafkaTemplate;
 
     @Bean
-    Job job() {
-        return jobBuilderFactory.get("job")
-            .start(start())
+    Job producerJob() {
+        return jobBuilderFactory.get("producerJob")
+            .start(producerStep())
             .incrementer(new RunIdIncrementer())
             .build();
     }
 
     @Bean
-    Step start() {
+    Step producerStep() {
 
         var id = new AtomicLong();
         final var customerItemReader = new ItemReader<Customer>() {
@@ -53,7 +53,7 @@ public class ProducerApplication {
             }
         };
 
-        return stepBuilderFactory.get("start")
+        return stepBuilderFactory.get("producerStep")
             .<Customer, Customer>chunk(10)
             .reader(customerItemReader)
             .writer(kafkaItemWriter())
